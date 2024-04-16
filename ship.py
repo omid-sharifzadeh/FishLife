@@ -15,13 +15,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
-from random import randint, choice
-
 from kivy.uix.image import Image
-from kivy.animation import Animation
 from kivy.core.window import Window
+from kivy.animation import Animation
 from kivy.properties import BooleanProperty, OptionProperty, NumericProperty
+from random import randint, choice
 
 class Ship(Image):
     
@@ -29,12 +27,14 @@ class Ship(Image):
     horison = NumericProperty(0)
     state = OptionProperty("fishing", options=["fishing", "sailing"])
     
-    def __init__(self, image = "images/ship.png", horison = 200, **kwargs):
-        self.source = image
-        self.horison = horison # Pixels from the top of parent container
-        
-        self.size = (292, 190)
+    def __init__(self, image="images/ship.png", horison=200, **kwargs):
         super(Ship, self).__init__(**kwargs)
+        
+        self.source = image
+        self.horison = horison  # Pixels from the top of parent container
+        
+        self.size_hint = (None, None)  # Set size_hint to (None, None)
+        self.size = (292, 190)  # Set the size
         
         self.texture_left = self.texture.get_region(0, 0, 292, 190)
         self.texture_right = self.texture.get_region(292, 0, 292, 190)
@@ -48,10 +48,10 @@ class Ship(Image):
     def sail(self):
         self.dispatch("on_start_sailing")
         
-        # TODO: more intresting/smooth placing and transition
+        # TODO: more interesting/smooth placing and transition
         new_fishing_place = randint(0, self.parent.width - 40)
         anim = Animation(center_x=new_fishing_place, t="in_out_quad", d=2)
-        anim.bind(on_complete= lambda instance, value: self.dispatch("on_stop_sailing"))    
+        anim.bind(on_complete=lambda instance, value: self.dispatch("on_stop_sailing"))    
         self.texture = self.texture_left if new_fishing_place < self.center_x else self.texture_right
         anim.start(self)
         
@@ -64,4 +64,3 @@ class Ship(Image):
         
     def on_stop_sailing(self):
         self.state = "fishing"
-
